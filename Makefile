@@ -6,10 +6,10 @@
 # 2014 April 7
 #
 
-CC := gcc
+CC := clang
 CFLAGS := -std=c11
 
-CXX := g++
+CXX := clang++
 CXXFLAGS := -std=c++11
 
 CPPFLAGS := -O3 -march=core-avx2
@@ -17,8 +17,8 @@ CPPFLAGS := -O3 -march=core-avx2
 TARGET_ARCH := -m64
 
 # no -D,-I,-L,-l flags required
-DEFINES := NODEBUG
-INCLUDE_PATHS := .. inc/ 
+DEFINES := 
+INCLUDE_PATHS := 
 LIBRARY_PATHS :=
 LIBRARIES := 
 
@@ -85,7 +85,7 @@ LDLIBS := $(INSERT_FLAG)
 
 # Update CPP flags for compilation
 CPPFLAGS := $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
-CPPFLAGS_INTERNAL = $(DEFINES) $(INCLUDE_PATHS)
+CPPFLAGS_INTERNAL = $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
 
 .PHONY: clean veryclean info Makefile flags $(DEPENDS) -
 
@@ -105,7 +105,7 @@ info:
 # Flags -- useful for ac-clang in emacs
 flags:
 	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS))
-	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define[ \t]*/-D/;s/ /=/;s/\([()"]\)/\\\1/g'))
+	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define /-D/;s/ /=/' | grep -E -i \(sse\|avx\|popcnt\|lzcnt\|rdseed\|prfchw\|fma\|xop\|tbm\|f16c\|bmi\|mmx\|rdrand\rtm\|sha\)))
 ifeq ($(LINK),$(CC))
 	@echo $(CFLAGS) $(FLAGS) 
 else
