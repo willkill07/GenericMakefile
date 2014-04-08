@@ -1,9 +1,9 @@
-# Generic Makefile v2.1
+# Generic Makefile v2.2
 #
 # William Killian
 # william.killian@gmail.com
 #
-# 2014 April 5
+# 2014 April 7
 #
 
 CC := gcc
@@ -20,7 +20,7 @@ TARGET_ARCH := -m64
 DEFINES := NODEBUG
 INCLUDE_PATHS := .. inc/ 
 LIBRARY_PATHS :=
-LIBRARIES := m
+LIBRARIES := 
 
 HEADERS := .h .hpp .hh
 SUFFIXES := .c .cpp .cxx .cc .C
@@ -103,7 +103,7 @@ info:
 
 # Flags -- useful for ac-clang in emacs
 flags:
-ifeq (($LINK),$(CC))
+ifeq ($(LINK),$(CC))
 	@echo $(DEFINES) $(INCLUDE_PATHS) $(CFLAGS)
 else
 	@echo $(DEFINES) $(INCLUDE_PATHS) $(CXXFLAGS)
