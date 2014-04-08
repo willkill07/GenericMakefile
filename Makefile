@@ -88,7 +88,7 @@ CPPFLAGS_INTERNAL := $(CPPFLAGS) $(DEFINES) $(INCLUDE_PATHS)
 CPPFLAGS := $(CPPFLAGS) $(DEFINES) $(INCLUDE_PATHS) $(AUTO_DEPEND_FLAG)
 
 # Evaluate flags for autocomplete
-$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS) $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define /-D/;s/ /=/' | grep -E -i \(sse\|avx\|popcnt\|lzcnt\|rdseed\|prfchw\|fma\|xop\|tbm\|f16c\|bmi\|mmx\|rdrand\|rtm\|sha\)))
+$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS) $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define /-D/;s/ /=/' | grep -E -i \(sse\|avx\|popcnt\|lzcnt\|rdseed\|prfchw\|fma\|xop\|tbm\|f16c\|bmi\|mmx\|rdrnd\|rtm\|sha\)))
 
 .PHONY: clean veryclean info Makefile flags $(DEPENDS)
 
