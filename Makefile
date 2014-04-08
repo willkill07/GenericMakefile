@@ -84,28 +84,32 @@ FLAG := -l
 LDLIBS := $(INSERT_FLAG)
 
 # Update CPP flags for compilation
-CPPFLAGS := $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
-CPPFLAGS_INTERNAL := $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
+CPPFLAGS_INTERNAL := $(CPPFLAGS) $(DEFINES) $(INCLUDE_PATHS) 
+CPPFLAGS := $(CPPFLAGS) $(DEFINES) $(INCLUDE_PATHS) $(AUTO_DEPEND_FLAG)
 
-.PHONY: clean veryclean info Makefile flags $(DEPENDS) -
+# Evaluate flags for autocomplete
+$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS) $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define /-D/;s/ /=/' | grep -E -i \(sse\|avx\|popcnt\|lzcnt\|rdseed\|prfchw\|fma\|xop\|tbm\|f16c\|bmi\|mmx\|rdrand\rtm\|sha\)))
+
+.PHONY: clean veryclean info Makefile flags $(DEPENDS)
 
 # Default to display info
-info:
+help:
 	@echo "DISPLAYING MAKE INFO"
 	@echo "--------------------"
+	@echo "LINKER:"
+	@echo "$(LINK)\n"
 	@echo "SOURCES:"
-	@echo "$(SOURCES)"
-	@echo "OBJECTS:"
-	@echo "$(OBJECTS)"
-	@echo "DEPENDS:"
-	@echo "$(DEPENDS)"
-	@echo " "
+	@echo "$(SOURCES)\n"
+	@echo "FLAGS (for clang-complete):"
+	@echo "$(FLAGS)\n"
+	@echo "FLAGS:"
+	@echo "> CPP:      $(CPPFLAGS)"
+	@echo "> CFLAGS:   $(CFLAGS)"
+	@echo "> CXXFLAGS: $(CXXFLAGS)"
 	@echo "To compile, specify a target name  e.g. 'make myBinary'"
 
 # Flags -- useful for ac-clang in emacs
 flags:
-	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS))
-	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define /-D/;s/ /=/' | grep -E -i \(sse\|avx\|popcnt\|lzcnt\|rdseed\|prfchw\|fma\|xop\|tbm\|f16c\|bmi\|mmx\|rdrand\rtm\|sha\)))
 ifeq ($(LINK),$(CC))
 	@echo $(CFLAGS) $(FLAGS) 
 else
@@ -129,6 +133,5 @@ endif
 	$(LINK) $(CPPFLAGS_INTERNAL) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 
-CPPFLAGS += $(AUTO_DEPEND_FLAG)
 # Don't forget the dependencies
 -include $(DEPENDS)
