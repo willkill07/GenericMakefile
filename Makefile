@@ -103,8 +103,8 @@ info:
 
 # Flags -- useful for ac-clang in emacs
 flags:
-	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS) $(shell echo $(CPPFLAGS) | sed 's/$(AUTO_DEPEND_FLAG)//g'))
-	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS) | sed 's/#define[ \t]*//;s/ /=/;s/\([()"]\)/\\\1/g'))
+	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS))
+	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS) | sed 's/#define[ \t]*/-D/;s/ /=/;s/\([()"]\)/\\\1/g'))
 ifeq ($(LINK),$(CC))
 	@echo $(FLAGS) $(CFLAGS) 
 else
