@@ -84,9 +84,10 @@ FLAG := -l
 LDLIBS := $(INSERT_FLAG)
 
 # Update CPP flags for compilation
-CPPFLAGS := $(AUTO_DEPEND_FLAG) $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
+CPPFLAGS := $(DEFINES) $(INCLUDE_PATHS) $(CPPFLAGS)
+CPPFLAGS_INTERNAL = $(DEFINES) $(INCLUDE_PATHS)
 
-.PHONY: clean veryclean info Makefile flags $(DEPENDS)
+.PHONY: clean veryclean info Makefile flags $(DEPENDS) -
 
 # Default to display info
 info:
@@ -104,11 +105,11 @@ info:
 # Flags -- useful for ac-clang in emacs
 flags:
 	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS))
-	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS) | sed 's/#define[ \t]*/-D/;s/ /=/;s/\([()"]\)/\\\1/g'))
+	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS_INTERNAL) | sed 's/#define[ \t]*/-D/;s/ /=/;s/\([()"]\)/\\\1/g'))
 ifeq ($(LINK),$(CC))
-	@echo $(FLAGS) $(CFLAGS) 
+	@echo $(CFLAGS) $(FLAGS) 
 else
-	@echo $(FLAGS) $(CXXFLAGS)
+	@echo $(CXXFLAGS) $(FLAGS)
 endif
 
 # Cleaning
@@ -120,13 +121,14 @@ veryclean : clean
 
 # Final Linking
 % : $(OBJECTS)
-	$(eval CPPFLAGS := $(shell echo $(CPPFLAGS) | sed 's/$(AUTO_DEPEND_FLAG)//g'))
 ifeq ($(LINK),$(CC))
-	$(eval CPPFLAGS := $(CPPFLAGS) $(CFLAGS))
+	$(eval CPPFLAGS_INTERNAL := $(CPPFLAGS_INTERNAL) $(CFLAGS))
 else
-	$(eval CPPFLAGS := $(CPPFLAGS) $(CXXFLAGS))
+	$(eval CPPFLAGS_INTERNAL := $(CPPFLAGS_INTERNAL) $(CXXFLAGS))
 endif
-	$(LINK) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
+	$(LINK) $(CPPFLAGS_INTERNAL) $(LDFLAGS) $(TARGET_ARCH) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
+
+CPPFLAGS += $(AUTO_DEPEND_FLAG)
 # Don't forget the dependencies
 -include $(DEPENDS)
