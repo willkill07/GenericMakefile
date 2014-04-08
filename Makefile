@@ -12,7 +12,7 @@ CFLAGS := -std=c11
 CXX := g++
 CXXFLAGS := -std=c++11
 
-CPPFLAGS := -O3 -march=native
+CPPFLAGS := -O3 -march=core-avx2
 
 TARGET_ARCH := -m64
 
@@ -103,10 +103,12 @@ info:
 
 # Flags -- useful for ac-clang in emacs
 flags:
+	$(eval FLAGS := $(DEFINES) $(INCLUDE_PATHS) $(shell echo $(CPPFLAGS) | sed 's/$(AUTO_DEPEND_FLAG)//g'))
+	$(eval FLAGS += $(shell </dev/null $(LINK) -dM -E - $(CPPFLAGS) | sed 's/#define[ \t]*//;s/ /=/;s/\([()"]\)/\\\1/g'))
 ifeq ($(LINK),$(CC))
-	@echo $(DEFINES) $(INCLUDE_PATHS) $(CFLAGS)
+	@echo $(FLAGS) $(CFLAGS) 
 else
-	@echo $(DEFINES) $(INCLUDE_PATHS) $(CXXFLAGS)
+	@echo $(FLAGS) $(CXXFLAGS)
 endif
 
 # Cleaning
