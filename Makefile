@@ -1,9 +1,9 @@
-# Generic Makefile v2.2
+# Generic Makefile v2.2.1
 #
 # William Killian
 # william.killian@gmail.com
 #
-# 2014 April 7
+# 2014 April 12
 #
 
 CC := clang
@@ -13,6 +13,7 @@ CXX := clang++
 CXXFLAGS := -std=c++11
 
 CPPFLAGS := -O3 -march=core-avx2
+# Macports fix:  -Wa,-q
 
 TARGET_ARCH := -m64
 
@@ -32,10 +33,7 @@ LINK_ORDER := (.cpp,.cxx,.cc,.C:$(CXX)) (.c:$(CC))
 # used for auto dependency generation
 AUTO_DEPEND_FLAG := -MMD
 
-
-
 # ----- DO NOT EDIT ANYTHING BELOW HERE UNLESS YOU ARE CRAZY -----
-
 
 #                                                       . -> \. | any whitespace -> \|     | delete first \|
 SUFFIXES_MUTATOR := \($(shell echo $(SUFFIXES) | sed 's/\./\\./g;s/[[:space:]]\{1,\}/\\\|/g;s/^\\|//')\)
